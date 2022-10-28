@@ -1,8 +1,9 @@
 ﻿@page "/fetchdata"
 @using BlazorWasm.Client.Models
 @using BlazorWasm.Client.Services
+@inject PersistentComponentState ApplicationState
 @inject IWeatherForecastService Service
-
+@implements IDisposable
 <PageTitle>Weather forecast</PageTitle>
 
 <h1>Weather forecast</h1>
@@ -39,8 +40,24 @@ else
 }
 
 @code {
+    private PersistingComponentStateSubscription _subscription;
     private IEnumerable<WeatherForecast>? _forecasts;
 
-    protected override async Task OnInitializedAsync() =>
-        _forecasts = await Service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+    protected override async Task OnInitializedAsync()
+    {
+        _subscription = ApplicationState.RegisterOnPersisting(PersistForecasts);
+        _forecasts = ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>("fetchData", out var stored) ? 
+            stored : 
+            await Service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+    }
+
+    private Task PersistForecasts()
+    {
+        ApplicationState.PersistAsJson("fetchData", _forecasts);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose() =>
+        _subscription.Dispose();
+
 }
