@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -19,8 +20,6 @@ public class ErrorModel : PageModel
         _logger = logger;
     }
 
-    public void OnGet()
-    {
+    public void OnGet() =>
         RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-    }
 }

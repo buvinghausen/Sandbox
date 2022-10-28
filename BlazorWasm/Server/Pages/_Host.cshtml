@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using BlazorWasm.Client
 @using Microsoft.AspNetCore.Components.Web
-@namespace BlazorServer.Pages ;
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@namespace BlazorWasm.Server.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -11,15 +13,14 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
-    <link href="BlazorServer.styles.css" rel="stylesheet" />
+    <link href="BlazorWasm.Client.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <component type="typeof(HeadOutlet)" render-mode="WebAssemblyPrerendered" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
-
+    <component type="typeof(App)" render-mode="WebAssemblyPrerendered" />
     <div id="blazor-error-ui">
-        <environment include="Staging,Production">
+        <environment exclude="Development">
             An error has occurred. This application may no longer respond until reloaded.
         </environment>
         <environment include="Development">
@@ -28,7 +29,6 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-
-    <script src="_framework/blazor.server.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
 </body>
 </html>
