@@ -45,19 +45,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _subscription = ApplicationState.RegisterOnPersisting(PersistForecasts);
+        _subscription = ApplicationState.RegisterOnPersisting(() =>
+        {
+            ApplicationState.PersistAsJson("fetchData", _forecasts);
+            return Task.CompletedTask;
+        });
         _forecasts = ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>("fetchData", out var stored) ? 
             stored : 
             await Service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
     }
 
-    private Task PersistForecasts()
-    {
-        ApplicationState.PersistAsJson("fetchData", _forecasts);
-        return Task.CompletedTask;
-    }
-
     public void Dispose() =>
         _subscription.Dispose();
-
 }
