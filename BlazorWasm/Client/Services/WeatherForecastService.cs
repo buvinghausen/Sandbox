@@ -14,5 +14,5 @@ internal sealed class WeatherForecastService : IWeatherForecastService
     }
     
     public Task<WeatherForecast[]> GetForecastAsync(DateOnly startDate) =>
-        _http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        _http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast")!;
 }
