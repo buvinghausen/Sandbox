@@ -41,7 +41,7 @@ else
 
 @code {
     private PersistingComponentStateSubscription _subscription;
-    private IEnumerable<WeatherForecast>? _forecasts;
+    private WeatherForecast[]? _forecasts;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,7 +50,7 @@ else
             ApplicationState.PersistAsJson("fetchData", _forecasts);
             return Task.CompletedTask;
         });
-        _forecasts = ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>("fetchData", out var stored) ? 
+        _forecasts = ApplicationState.TryTakeFromJson<WeatherForecast[]>("fetchData", out var stored) ? 
             stored : 
             await Service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
     }

@@ -13,6 +13,6 @@ internal sealed class WeatherForecastService : IWeatherForecastService
         _http = http;
     }
     
-    public Task<IEnumerable<WeatherForecast>?> GetForecastAsync(DateOnly startDate) =>
-        _http.GetFromJsonAsync<IEnumerable<WeatherForecast>?>("WeatherForecast");
+    public Task<WeatherForecast[]> GetForecastAsync(DateOnly startDate) =>
+        _http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
 }

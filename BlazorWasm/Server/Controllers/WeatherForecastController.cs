@@ -17,6 +17,6 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet]
-    public Task<IEnumerable<WeatherForecast>?> GetAsync() =>
+    public Task<WeatherForecast[]> GetAsync() =>
         _service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
 }
