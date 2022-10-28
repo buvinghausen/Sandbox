@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata"
 @using BlazorWasm.Client.Models
-@inject HttpClient Http
+@using BlazorWasm.Client.Services
+@inject IWeatherForecastService Service
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -38,8 +39,8 @@ else
 }
 
 @code {
-    private WeatherForecast[]? _forecasts;
+    private IEnumerable<WeatherForecast>? _forecasts;
 
     protected override async Task OnInitializedAsync() =>
-        _forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        _forecasts = await Service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
 }

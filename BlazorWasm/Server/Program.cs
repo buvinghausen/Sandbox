@@ -1,7 +1,10 @@
+using BlazorWasm.Client.Services;
+using BlazorWasm.Server.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
