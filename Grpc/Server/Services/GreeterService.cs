@@ -4,7 +4,7 @@ using ProtoBuf.Grpc;
 
 namespace Grpc.Server.Services;
 
-public sealed class GreeterService : IGreeterService
+internal sealed class GreeterService : IGreeterService
 {
     private readonly ILogger<GreeterService> _logger;
 
