@@ -1,5 +1,7 @@
 using Grpc.Server.Services;
 
+using ProtoBuf.Grpc.Server;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Additional configuration is required to successfully run gRPC on macOS.
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddCodeFirstGrpc();
 
 var app = builder.Build();
 

@@ -1,12 +1,21 @@
-using Grpc.Core;
+using Grpc.Shared;
+
+using ProtoBuf.Grpc;
 
 namespace Grpc.Server.Services;
 
-public class GreeterService : Greeter.GreeterBase
+public sealed class GreeterService : IGreeterService
 {
-    public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context) =>
-        Task.FromResult(new HelloReply
-        {
-            Message = "Hello " + request.Name
-        });
+    private readonly ILogger<GreeterService> _logger;
+
+    public GreeterService(ILogger<GreeterService> logger)
+    {
+        _logger = logger;
+    }
+
+    public Task<HelloResponse> SayHelloAsync(HelloRequest request, CallContext context = default)
+    {
+        _logger.LogInformation("Sending hello to {Name}", request.Name);
+        return Task.FromResult(new HelloResponse { Message = $"Hello {request.Name}!" });
+    }
 }
