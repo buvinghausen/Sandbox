@@ -8,5 +8,5 @@ namespace Grpc.Shared.Weather;
 public interface IWeatherForecastService
 {
     [OperationContract]
-    Task<WeatherForecast[]> GetForecastAsync(CallContext context = default);
+    Task<WeatherForecast[]> GetForecastsAsync(WeatherForecastRequest request, CallContext context = default);
 }

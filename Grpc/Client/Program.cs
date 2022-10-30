@@ -2,6 +2,8 @@
 using Grpc.Shared.Greeter;
 using Grpc.Shared.Weather;
 
+using NodaTime;
+
 using ProtoBuf.Grpc.Client;
 using ProtoBuf.Meta;
 
@@ -16,7 +18,7 @@ var greeting = await greeter.GetGreetingAsync(new GreeterRequest { Name = name }
 Console.WriteLine($"Greeting: {greeting.Message}");
 Console.WriteLine("Getting weather forecast");
 var weather = channel.CreateGrpcService<IWeatherForecastService>();
-var forecasts = await weather.GetForecastAsync();
+var forecasts = await weather.GetForecastsAsync(new WeatherForecastRequest { Date = LocalDate.FromDateTime(DateTime.Now) });
 forecasts.ToList().ForEach(f => Console.WriteLine($"Date: {f.Date}\tTemperature (F): {f.TemperatureF}\tSummary: {f.Summary}"));
 Console.WriteLine("Shutting down");
 Console.WriteLine("Press any key to exit...");
