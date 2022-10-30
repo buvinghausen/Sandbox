@@ -17,8 +17,7 @@ internal sealed class GrpcExceptionInterceptor : Interceptor
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
         ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
     {
-        var httpContext = context.GetHttpContext();
-        _logger.LogDebug("Starting call. Request: {Path}", httpContext.Request.Path);
+        _logger.LogDebug("Starting call. Request: {Path}", context.GetHttpContext().Request.Path);
         try
         {
             return await continuation(request, context).ConfigureAwait(false);
