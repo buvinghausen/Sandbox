@@ -12,7 +12,11 @@ public sealed record WeatherForecastRequest
     {
     }
 
-    public WeatherForecastRequest(LocalDate? date)
+    public WeatherForecastRequest(DateTime date) : this(LocalDate.FromDateTime(date))
+    {
+    }
+
+    public WeatherForecastRequest(LocalDate date)
     {
         Date = date;
     }

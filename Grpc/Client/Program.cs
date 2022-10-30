@@ -3,8 +3,6 @@ using Grpc.Contracts.Weather;
 using Grpc.Core;
 using Grpc.Net.Client;
 
-using NodaTime;
-
 using ProtoBuf.Grpc.Client;
 using ProtoBuf.Meta;
 
@@ -27,7 +25,7 @@ try
 {
     Console.WriteLine("Getting weather forecast");
     var service = channel.CreateGrpcService<IWeatherForecastService>();
-    var response = await service.GetForecastsAsync(new WeatherForecastRequest(LocalDate.FromDateTime(DateTime.Now)));
+    var response = await service.GetForecastsAsync(new WeatherForecastRequest(DateTime.Now));
     response.ToList().ForEach(f => Console.WriteLine($"Date: {f.Date}\tTemperature (F): {f.TemperatureF}\tSummary: {f.Summary}"));
 }
 catch (RpcException e) when (e.StatusCode == StatusCode.InvalidArgument)
