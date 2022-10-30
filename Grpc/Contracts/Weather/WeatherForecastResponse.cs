@@ -20,13 +20,13 @@ public sealed record WeatherForecastResponse
     }
 
     [DataMember(Order = 1)]
-    public LocalDate Date { get; init; }
+    public LocalDate Date { get; }
 
     [DataMember(Order = 2)]
-    public int TemperatureC { get; init; }
+    public int TemperatureC { get; }
 
     [DataMember(Order = 3)]
-    public string? Summary { get; init; }
+    public string? Summary { get; }
 
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
