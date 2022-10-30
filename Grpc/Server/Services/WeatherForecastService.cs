@@ -1,6 +1,11 @@
 ﻿using System.Security.Cryptography;
 
+using FluentValidation;
+
 using Grpc.Shared.Weather;
+
+using NodaTime;
+using NodaTime.Extensions;
 
 using ProtoBuf.Grpc;
 
@@ -19,14 +24,27 @@ internal sealed class WeatherForecastService : IWeatherForecastService
         _logger = logger;
     }
 
-    public Task<WeatherForecast[]> GetForecastsAsync(WeatherForecastRequest request, CallContext context = default)
+    public Task<WeatherForecastResponse[]> GetForecastsAsync(WeatherForecastRequest request, CallContext context = default)
     {
         _logger.LogInformation("GetForecastAsync");
-        return Task.FromResult(Enumerable.Range(0, 5).Select(index => new WeatherForecast
+        return Task.FromResult(Enumerable.Range(0, 5).Select(index => new WeatherForecastResponse
         {
-            Date = request.Date.PlusDays(index),
+            Date = request.Date.GetValueOrDefault().PlusDays(index),
             TemperatureC = RandomNumberGenerator.GetInt32(-20, 55),
             Summary = Summaries[RandomNumberGenerator.GetInt32(Summaries.Length)]
         }).ToArray());
+    }
+}
+
+internal sealed class WeatherForecastValidator : AbstractValidator<WeatherForecastRequest>
+{
+    public WeatherForecastValidator()
+    {
+        // Note: you could create a ZonedClock and inject it into the constructor
+        var today = SystemClock.Instance.InTzdbSystemDefaultZone().GetCurrentDate();
+        RuleFor(w => w.Date)
+            .NotEmpty()
+            .GreaterThanOrEqualTo(today)
+            .LessThanOrEqualTo(today.PlusDays(10));
     }
 }

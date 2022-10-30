@@ -8,5 +8,5 @@ namespace Grpc.Shared.Weather;
 public sealed class WeatherForecastRequest
 {
     [DataMember(Order = 1)]
-    public LocalDate Date { get; set; }
+    public LocalDate? Date { get; set; }
 }

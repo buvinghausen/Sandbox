@@ -1,3 +1,5 @@
+using FluentValidation;
+
 using Grpc.Shared.Greeter;
 
 using ProtoBuf.Grpc;
@@ -18,4 +20,11 @@ internal sealed class GreeterService : IGreeterService
         _logger.LogInformation("Sending hello to {Name}", request.Name);
         return Task.FromResult(new GreeterResponse { Message = $"Hello {request.Name}!" });
     }
+}
+
+internal sealed class GreeterValidator : AbstractValidator<GreeterRequest>
+{
+    public GreeterValidator() =>
+        RuleFor(g => g.Name)
+            .NotEmpty();
 }

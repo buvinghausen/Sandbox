@@ -1,3 +1,6 @@
+using FluentValidation;
+
+using Grpc.Server.Interceptors;
 using Grpc.Server.Services;
 
 using ProtoBuf.Grpc.Server;
@@ -5,14 +8,28 @@ using ProtoBuf.Meta;
 
 // Add NodaTime support to ProtoBuf
 RuntimeTypeModel.Default.AddNodaTime();
+// Make fluent validation only return 1x failure per rule (property)
+ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var isProduction = builder.Environment.IsProduction();
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
 // Add services to the container.
-builder.Services.AddCodeFirstGrpc(o => o.EnableDetailedErrors = true);
+builder.Services.AddGrpc(o =>
+{
+    o.EnableDetailedErrors = !isProduction;
+    // Wire up validation and exception handlers (note the sequence here is imperative)
+    // The interceptors are invoked in the sequence they are added since the exception
+    // Interceptor wraps the validation interceptor and maps the ValidationException
+    // to an RpcException it must be added first
+    o.Interceptors.Add<GrpcExceptionInterceptor>();
+    o.Interceptors.Add<GrpcValidationInterceptor>();
+});
+builder.Services
+    .AddValidatorsFromAssemblyContaining<GreeterValidator>(includeInternalTypes: true)
+    .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
 
 var app = builder.Build();
 

@@ -5,7 +5,7 @@ using NodaTime;
 namespace Grpc.Shared.Weather;
 
 [DataContract]
-public sealed class WeatherForecast
+public sealed class WeatherForecastResponse
 {
     [DataMember(Order = 1)]
     public LocalDate Date { get; set; }
