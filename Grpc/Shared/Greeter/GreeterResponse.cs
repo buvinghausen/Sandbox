@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Grpc.Shared;
+namespace Grpc.Shared.Greeter;
 
 [DataContract]
-public sealed record HelloResponse
+public sealed record GreeterResponse
 {
     [DataMember(Order = 1)]
     public string? Message { get; set; }

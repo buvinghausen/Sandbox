@@ -1,4 +1,4 @@
-using Grpc.Shared;
+using Grpc.Shared.Greeter;
 
 using ProtoBuf.Grpc;
 
@@ -13,9 +13,9 @@ internal sealed class GreeterService : IGreeterService
         _logger = logger;
     }
 
-    public Task<HelloResponse> SayHelloAsync(HelloRequest request, CallContext context = default)
+    public Task<GreeterResponse> GetGreetingAsync(GreeterRequest request, CallContext context = default)
     {
         _logger.LogInformation("Sending hello to {Name}", request.Name);
-        return Task.FromResult(new HelloResponse { Message = $"Hello {request.Name}!" });
+        return Task.FromResult(new GreeterResponse { Message = $"Hello {request.Name}!" });
     }
 }

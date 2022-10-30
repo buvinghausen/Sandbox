@@ -8,6 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="protobuf-net.Grpc" Version="1.*" />
+        <PackageReference Include="protobuf-net.NodaTime" Version="3.*" />
+        <PackageReference Include="System.ServiceModel.Primitives" Version="4.*" />
     </ItemGroup>
 
 </Project>
