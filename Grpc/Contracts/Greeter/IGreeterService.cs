@@ -1,8 +1,8 @@
-﻿using ProtoBuf.Grpc;
+﻿using System.ServiceModel;
 
-using System.ServiceModel;
+using ProtoBuf.Grpc;
 
-namespace Grpc.Shared.Greeter;
+namespace Grpc.Contracts.Greeter;
 
 [ServiceContract]
 public interface IGreeterService

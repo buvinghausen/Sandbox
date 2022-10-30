@@ -1,6 +1,6 @@
 using FluentValidation;
 
-using Grpc.Shared.Greeter;
+using Grpc.Contracts.Greeter;
 
 using ProtoBuf.Grpc;
 

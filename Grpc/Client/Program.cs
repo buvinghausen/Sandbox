@@ -1,7 +1,7 @@
-﻿using Grpc.Core;
+﻿using Grpc.Contracts.Greeter;
+using Grpc.Contracts.Weather;
+using Grpc.Core;
 using Grpc.Net.Client;
-using Grpc.Shared.Greeter;
-using Grpc.Shared.Weather;
 
 using NodaTime;
 

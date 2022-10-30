@@ -2,7 +2,7 @@
 
 using NodaTime;
 
-namespace Grpc.Shared.Weather;
+namespace Grpc.Contracts.Weather;
 
 [DataContract]
 public sealed class WeatherForecastRequest

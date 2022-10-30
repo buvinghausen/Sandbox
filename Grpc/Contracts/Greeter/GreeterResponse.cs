@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Grpc.Shared.Greeter;
+namespace Grpc.Contracts.Greeter;
 
 [DataContract]
 public sealed record GreeterResponse

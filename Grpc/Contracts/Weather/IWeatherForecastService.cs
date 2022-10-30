@@ -2,7 +2,7 @@
 
 using ProtoBuf.Grpc;
 
-namespace Grpc.Shared.Weather;
+namespace Grpc.Contracts.Weather;
 
 [ServiceContract]
 public interface IWeatherForecastService

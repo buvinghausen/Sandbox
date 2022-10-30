@@ -2,7 +2,7 @@
 
 using FluentValidation;
 
-using Grpc.Shared.Weather;
+using Grpc.Contracts.Weather;
 
 using NodaTime;
 using NodaTime.Extensions;
