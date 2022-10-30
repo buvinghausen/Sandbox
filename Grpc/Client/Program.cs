@@ -16,7 +16,7 @@ try
     Console.WriteLine("What is your name?");
     var name = Console.ReadLine();
     var service = channel.CreateGrpcService<IGreeterService>();
-    var response = await service.GetGreetingAsync(new GreeterRequest { Name = name });
+    var response = await service.GetGreetingAsync(new GreeterRequest(name));
     Console.WriteLine($"Greeting: {response.Message}");
 }
 catch (RpcException e) when (e.StatusCode == StatusCode.InvalidArgument)
@@ -27,7 +27,7 @@ try
 {
     Console.WriteLine("Getting weather forecast");
     var service = channel.CreateGrpcService<IWeatherForecastService>();
-    var response = await service.GetForecastsAsync(new WeatherForecastRequest { Date = LocalDate.FromDateTime(DateTime.Now) });
+    var response = await service.GetForecastsAsync(new WeatherForecastRequest(LocalDate.FromDateTime(DateTime.Now)));
     response.ToList().ForEach(f => Console.WriteLine($"Date: {f.Date}\tTemperature (F): {f.TemperatureF}\tSummary: {f.Summary}"));
 }
 catch (RpcException e) when (e.StatusCode == StatusCode.InvalidArgument)
