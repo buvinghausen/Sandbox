@@ -1,6 +1,7 @@
 using FluentValidation;
 
 using Grpc.Server.Interceptors;
+using Grpc.Server.Middleware;
 using Grpc.Server.Services;
 
 using ProtoBuf.Grpc.Server;
@@ -15,6 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 var isProduction = builder.Environment.IsProduction();
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+// 9ntonio uncomment the following 2 lines and try again
+//builder.WebHost.UseKestrel(server => server.ConfigureEndpointDefaults(listenOptions =>
+//    listenOptions.Use(next => new ClearTextHttpMultiplexingMiddleware(next).OnConnectAsync)));
 
 // Add services to the container.
 _ = builder.Services
