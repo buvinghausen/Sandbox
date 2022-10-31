@@ -1,5 +1,6 @@
 using BlazorWasm.Client.Services.Weather;
 using BlazorWasm.Server.Interceptors;
+using BlazorWasm.Server.Middleware;
 using BlazorWasm.Server.Services;
 
 using FluentValidation;
@@ -18,6 +19,12 @@ ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
 var builder = WebApplication.CreateBuilder(args);
 var isProduction = builder.Environment.IsProduction();
+// Additional configuration is required to successfully run gRPC on macOS.
+// For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+// 9ntonio uncomment the following 2 lines and try again
+//builder.WebHost.UseKestrel(server => server.ConfigureEndpointDefaults(listenOptions =>
+//    listenOptions.Use(next => new ClearTextHttpMultiplexingMiddleware(next).OnConnectAsync)));
+
 // Add services to the container.
 _ = builder.Services
     .AddTransient<IWeatherForecastService, WeatherForecastService>() // gRPC services should be wired up as transient without the gRPC ceremony for pre-rendering
