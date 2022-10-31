@@ -5,7 +5,7 @@ using FluentValidation;
 using NodaTime;
 using NodaTime.Extensions;
 
-namespace BlazorWasm.Client.Services;
+namespace BlazorWasm.Client.Services.Weather;
 
 [DataContract]
 public sealed record WeatherForecastRequest

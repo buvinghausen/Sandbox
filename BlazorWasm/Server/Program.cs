@@ -1,4 +1,4 @@
-using BlazorWasm.Client.Services;
+using BlazorWasm.Client.Services.Weather;
 using BlazorWasm.Server.Interceptors;
 using BlazorWasm.Server.Services;
 

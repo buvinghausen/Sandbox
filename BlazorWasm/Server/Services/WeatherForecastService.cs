@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-using BlazorWasm.Client.Services;
+using BlazorWasm.Client.Services.Weather;
 
 using ProtoBuf.Grpc;
 

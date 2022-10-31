@@ -2,7 +2,7 @@
 
 using ProtoBuf.Grpc;
 
-namespace BlazorWasm.Client.Services;
+namespace BlazorWasm.Client.Services.Weather;
 
 [ServiceContract]
 public interface IWeatherForecastService

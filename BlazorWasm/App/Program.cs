@@ -1,5 +1,5 @@
 using BlazorWasm.App.Grpc;
-using BlazorWasm.Client.Services;
+using BlazorWasm.Client.Services.Weather;
 
 using FluentValidation;
 
