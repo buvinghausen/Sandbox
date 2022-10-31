@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>9a8c82c0-3a87-4db5-91a6-3585903bb0a3</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>9a8c82c0-3a87-4db5-91a6-3585903bb0a3</UserSecretsId>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0-*" />
-    <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.*" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.*" />
+        <PackageReference Include="Grpc.AspNetCore.Web" Version="2.*" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0-*" />
+        <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.*" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\App\BlazorWasm.App.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\App\BlazorWasm.App.csproj" />
+    </ItemGroup>
 
 
 </Project>

@@ -26,6 +26,13 @@ var isProduction = builder.Environment.IsProduction();
 //    listenOptions.Use(next => new ClearTextHttpMultiplexingMiddleware(next).OnConnectAsync)));
 
 // Add services to the container.
+// Only add GrpcReflection for non-production
+if (!isProduction)
+{
+    _ = builder.Services
+        .AddGrpcReflection();
+}
+
 _ = builder.Services
     .AddTransient<IWeatherForecastService, WeatherForecastService>() // gRPC services should be wired up as transient without the gRPC ceremony for pre-rendering
     .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
@@ -46,7 +53,12 @@ _ = builder.Services
 _ = builder.Services.AddRazorPages();
 
 var app = builder.Build();
-
+// Only use GrpcReflection in non-production
+if (!isProduction)
+{
+    _ = app
+        .MapGrpcReflectionService();
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
