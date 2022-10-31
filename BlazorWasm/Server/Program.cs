@@ -7,6 +7,10 @@ using FluentValidation;
 using ProtoBuf.Grpc.Server;
 using ProtoBuf.Meta;
 
+// It's 2022 and System.Text.Json is still broken :(
+//JsonSerializerOptions.Default.Converters.Add(new JsonStringEnumConverter());
+// Add NodaTime JsonConverters
+//JsonSerializerOptions.Default.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 // Add NodaTime support to ProtoBuf
 RuntimeTypeModel.Default.AddNodaTime();
 // Make fluent validation only return 1x failure per rule (property)
@@ -16,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 var isProduction = builder.Environment.IsProduction();
 // Add services to the container.
 _ = builder.Services
+    .AddTransient<IWeatherForecastService, WeatherForecastService>() // gRPC services should be wired up as transient without the gRPC ceremony for pre-rendering
     .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
     .AddGrpc(o =>
     {
@@ -29,8 +34,7 @@ _ = builder.Services
     });
 _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
-// gRPC services should be wired up as transient without the gRPC ceremony for pre-rendering
-builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
+
 // Need to add RazorPages so that _Host.cshtml & Error.cshtml can execute
 _ = builder.Services.AddRazorPages();
 

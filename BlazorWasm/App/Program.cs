@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 using ProtoBuf.Meta;
 
+// Add NodaTime JsonConverters
+//JsonSerializerOptions.Default.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 // Add NodaTime support to ProtoBuf
 RuntimeTypeModel.Default.AddNodaTime();
 // Make fluent validation only return 1x failure per rule (property)
