@@ -33,8 +33,8 @@ _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
+_ = app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
 _ = app.MapGrpcService<GreeterService>();
 _ = app.MapGrpcService<WeatherForecastService>();
 _ = app.MapGet("/",
