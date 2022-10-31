@@ -1,6 +1,6 @@
 ﻿@page "/fetchdata"
-@using BlazorWasm.Client.Models
 @using BlazorWasm.Client.Services
+@using NodaTime.Text
 @inject PersistentComponentState ApplicationState
 @inject IWeatherForecastService Service
 @implements IDisposable
@@ -29,7 +29,7 @@ else
             @foreach (var forecast in _forecasts)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@LocalDatePattern.Iso.Format(forecast.Date)</td>
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>
                     <td>@forecast.Summary</td>
@@ -41,7 +41,7 @@ else
 
 @code {
     private PersistingComponentStateSubscription _subscription;
-    private WeatherForecast[]? _forecasts;
+    private WeatherForecastResponse[]? _forecasts;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,9 +50,9 @@ else
             ApplicationState.PersistAsJson("fetchData", _forecasts);
             return Task.CompletedTask;
         });
-        _forecasts = ApplicationState.TryTakeFromJson<WeatherForecast[]>("fetchData", out var stored) ? 
+        _forecasts = ApplicationState.TryTakeFromJson<WeatherForecastResponse[]>("fetchData", out var stored) ? 
             stored : 
-            await Service.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+            await Service.GetForecastsAsync(new WeatherForecastRequest(DateTime.Now));
     }
 
     public void Dispose() =>

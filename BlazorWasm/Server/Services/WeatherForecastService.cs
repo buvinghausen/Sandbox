@@ -1,18 +1,33 @@
-﻿using BlazorWasm.Client.Models;
+﻿using System.Security.Cryptography;
+
 using BlazorWasm.Client.Services;
+
+using ProtoBuf.Grpc;
 
 namespace BlazorWasm.Server.Services;
 
 internal sealed class WeatherForecastService : IWeatherForecastService
 {
-    private static readonly string[] Summaries = {
+    private static readonly string[] Summaries =
+    {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-#pragma warning disable CA1822 // Mark members as static
-    public Task<WeatherForecast[]> GetForecastAsync(DateOnly startDate) =>
-        Task.FromResult(Enumerable
-            .Range(0, 5)
-            .Select(index => new WeatherForecast(startDate.AddDays(index), Random.Shared.Next(-20, 55), Summaries[Random.Shared.Next(Summaries.Length)])).ToArray());
-#pragma warning restore CA1822 // Mark members as static
+    private readonly ILogger<WeatherForecastService> _logger;
+
+    public WeatherForecastService(ILogger<WeatherForecastService> logger)
+    {
+        _logger = logger;
+    }
+
+    public Task<WeatherForecastResponse[]> GetForecastsAsync(WeatherForecastRequest request,
+        CallContext context = default)
+    {
+        _logger.LogInformation("GetForecastAsync");
+        return Task.FromResult(Enumerable.Range(0, 5).Select(index =>
+                new WeatherForecastResponse(request.Date.GetValueOrDefault().PlusDays(index),
+                    RandomNumberGenerator.GetInt32(-20, 55),
+                    Summaries[RandomNumberGenerator.GetInt32(Summaries.Length)]))
+            .ToArray());
+    }
 }

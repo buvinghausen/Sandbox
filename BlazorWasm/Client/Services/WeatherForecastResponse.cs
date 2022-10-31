@@ -1,8 +1,9 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 
 using NodaTime;
 
-namespace Grpc.Contracts.Weather;
+
+namespace BlazorWasm.Client.Services;
 
 [DataContract]
 public sealed record WeatherForecastResponse

@@ -1,8 +1,12 @@
-﻿using BlazorWasm.Client.Models;
+﻿using System.ServiceModel;
+
+using ProtoBuf.Grpc;
 
 namespace BlazorWasm.Client.Services;
 
+[ServiceContract]
 public interface IWeatherForecastService
 {
-    Task<WeatherForecast[]> GetForecastAsync(DateOnly startDate);
+    [OperationContract]
+    Task<WeatherForecastResponse[]> GetForecastsAsync(WeatherForecastRequest request, CallContext context = default);
 }

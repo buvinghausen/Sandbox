@@ -16,5 +16,5 @@ public sealed record GreeterResponse
     }
 
     [DataMember(Order = 1)]
-    public string? Message { get; }
+    public string Message { get; } = string.Empty;
 }
