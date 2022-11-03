@@ -1,7 +1,6 @@
 using FluentValidation;
 
 using Grpc.Server.Interceptors;
-using Grpc.Server.Middleware;
 using Grpc.Server.Services;
 
 using ProtoBuf.Grpc.Server;
@@ -21,12 +20,6 @@ var isProduction = builder.Environment.IsProduction();
 //    listenOptions.Use(next => new ClearTextHttpMultiplexingMiddleware(next).OnConnectAsync)));
 
 // Add services to the container.
-// Only add GrpcReflection for non-production
-if (!isProduction)
-{
-    _ = builder.Services
-        .AddGrpcReflection();
-}
 _ = builder.Services
     .AddValidatorsFromAssemblyContaining<GreeterValidator>(includeInternalTypes: true)
     .AddGrpc(o =>
@@ -41,16 +34,14 @@ _ = builder.Services
     });
 _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
-
-var app = builder.Build();
-// Only use GrpcReflection in non-production
 if (!isProduction)
-{
-    _ = app
-        .MapGrpcReflectionService();
-}
+    _ = builder.Services.AddCodeFirstGrpcReflection();
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 _ = app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
+// Only use GrpcReflection in non-production
+if (!isProduction) _ = app.MapCodeFirstGrpcReflectionService();
 _ = app.MapGrpcService<GreeterService>();
 _ = app.MapGrpcService<WeatherForecastService>();
 _ = app.MapGet("/",

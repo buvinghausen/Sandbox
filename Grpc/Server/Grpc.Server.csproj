@@ -8,9 +8,9 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.*" />
-        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.*" />
         <PackageReference Include="Grpc.AspNetCore.Web" Version="2.*" />
         <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.*" />
+        <PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.*" />
     </ItemGroup>
 
     <ItemGroup>

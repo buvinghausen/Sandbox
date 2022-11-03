@@ -22,5 +22,5 @@ public sealed record WeatherForecastRequest
     }
 
     [DataMember(Order = 1)]
-    public LocalDate? Date { get; }
+    public LocalDate? Date { get; init; }
 }
