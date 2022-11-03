@@ -1,6 +1,7 @@
 ﻿using Grpc.Contracts.Greeter;
 using Grpc.Contracts.Weather;
 using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 
 using ProtoBuf.Grpc.Client;
@@ -8,6 +9,7 @@ using ProtoBuf.Meta;
 
 // Add NodaTime support to ProtoBuf
 RuntimeTypeModel.Default.AddNodaTime();
+
 using var channel = GrpcChannel.ForAddress("https://localhost:5001");
 try
 {
@@ -31,6 +33,12 @@ try
 catch (RpcException e) when (e.StatusCode == StatusCode.InvalidArgument)
 {
     foreach (var error in e.Trailers) Console.WriteLine($"Property: {error.Key}\tMessage: {error.Value}");
+}
+{
+    Console.WriteLine("Fetching gRPC service status");
+    var service = new Health.HealthClient(channel);
+    var response = await service.CheckAsync(new HealthCheckRequest());
+    Console.WriteLine($"Status: {response.Status}");
 }
 Console.WriteLine("Shutting down");
 Console.WriteLine("Press any key to exit...");

@@ -3,6 +3,8 @@ using FluentValidation;
 using Grpc.Server.Interceptors;
 using Grpc.Server.Services;
 
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 using ProtoBuf.Grpc.Server;
 using ProtoBuf.Meta;
 
@@ -32,6 +34,9 @@ _ = builder.Services
         o.Interceptors.Add<GrpcExceptionInterceptor>();
         o.Interceptors.Add<GrpcValidationInterceptor>();
     });
+// Add real checks here but this at least gives us the infrastructure
+_ = builder.Services.AddGrpcHealthChecks()
+    .AddCheck("Demo", () => HealthCheckResult.Healthy());
 _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
 if (!isProduction)
@@ -42,6 +47,7 @@ var app = builder.Build();
 _ = app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
 // Only use GrpcReflection in non-production
 if (!isProduction) _ = app.MapCodeFirstGrpcReflectionService();
+_ = app.MapGrpcHealthChecksService();
 _ = app.MapGrpcService<GreeterService>();
 _ = app.MapGrpcService<WeatherForecastService>();
 _ = app.MapGet("/",
