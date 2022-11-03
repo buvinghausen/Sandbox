@@ -35,7 +35,8 @@ _ = builder.Services
         o.Interceptors.Add<GrpcValidationInterceptor>();
     });
 // Add real checks here but this at least gives us the infrastructure
-_ = builder.Services.AddGrpcHealthChecks()
+_ = builder.Services
+    .AddGrpcHealthChecks()
     .AddCheck("Demo", () => HealthCheckResult.Healthy());
 _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
