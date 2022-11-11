@@ -11,6 +11,12 @@ using ProtoBuf.Meta;
 RuntimeTypeModel.Default.AddNodaTime();
 
 using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+{
+    Console.WriteLine("Fetching gRPC service status");
+    var service = new Health.HealthClient(channel);
+    var response = await service.CheckAsync(new HealthCheckRequest());
+    Console.WriteLine($"Status: {response.Status}");
+}
 try
 {
     Console.WriteLine("What is your name?");

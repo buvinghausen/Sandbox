@@ -4,7 +4,7 @@ using ProtoBuf.Grpc;
 
 namespace Grpc.Contracts.Greeter;
 
-[ServiceContract]
+[ServiceContract(Name = "grpc.greeter.v1.GreeterService")]
 public interface IGreeterService
 {
     [OperationContract]

@@ -4,9 +4,9 @@ using ProtoBuf.Grpc;
 
 namespace BlazorWasm.Client.Services.Weather;
 
-[ServiceContract]
+[ServiceContract(Name = "grpc.weather.v1.WeatherForecastService")]
 public interface IWeatherForecastService
 {
     [OperationContract]
-    Task<WeatherForecastResponse[]> GetForecastsAsync(WeatherForecastRequest request, CallContext context = default);
+    ValueTask<WeatherForecastResponse[]> GetForecastsAsync(WeatherForecastRequest request, CallContext context = default);
 }
