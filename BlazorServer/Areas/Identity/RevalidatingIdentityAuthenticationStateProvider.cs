@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
@@ -33,7 +32,11 @@ public class RevalidatingIdentityAuthenticationStateProvider<TUser>
         try
         {
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TUser>>();
-            return await ValidateSecurityStampAsync(userManager, authenticationState.User);
+            var user = await userManager.GetUserAsync(authenticationState.User).ConfigureAwait(false);
+            return user != null && (!userManager.SupportsUserSecurityStamp ||
+                                    authenticationState.User.FindFirstValue(_options.ClaimsIdentity
+                                        .SecurityStampClaimType) ==
+                                    await userManager.GetSecurityStampAsync(user));
         }
         finally
         {
@@ -45,25 +48,6 @@ public class RevalidatingIdentityAuthenticationStateProvider<TUser>
             {
                 scope.Dispose();
             }
-        }
-    }
-
-    private async Task<bool> ValidateSecurityStampAsync(UserManager<TUser> userManager, ClaimsPrincipal principal)
-    {
-        var user = await userManager.GetUserAsync(principal);
-        if (user == null)
-        {
-            return false;
-        }
-        else if (!userManager.SupportsUserSecurityStamp)
-        {
-            return true;
-        }
-        else
-        {
-            var principalStamp = principal.FindFirstValue(_options.ClaimsIdentity.SecurityStampClaimType);
-            var userStamp = await userManager.GetSecurityStampAsync(user);
-            return principalStamp == userStamp;
         }
     }
 }
