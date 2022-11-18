@@ -1,11 +1,20 @@
 using BlazorWasm.Client.Services.Weather;
+using BlazorWasm.Server.Extensions;
 using BlazorWasm.Server.Interceptors;
+using BlazorWasm.Server.Middleware;
 using BlazorWasm.Server.Services;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
 using ProtoBuf.Grpc.Server;
 using ProtoBuf.Meta;
+
+using SequentialGuid;
 
 // It's 2022 and System.Text.Json is still broken :(
 //JsonSerializerOptions.Default.Converters.Add(new JsonStringEnumConverter());
@@ -15,11 +24,47 @@ using ProtoBuf.Meta;
 RuntimeTypeModel.Default.AddNodaTime();
 // Make fluent validation only return 1x failure per rule (property)
 ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
-
 var builder = WebApplication.CreateBuilder(args);
 var isProduction = builder.Environment.IsProduction();
-
 // Add services to the container.
+// Enable OpenTelemetry
+_ = builder.Services
+    .AddOpenTelemetryTracing(trace => trace
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService("BlazorWasm",
+                serviceInstanceId: SequentialGuidGenerator.Instance.NewGuid().ToString()))
+        .AddAspNetCoreInstrumentation(o =>
+        {
+            o.RecordException = true;
+            o.EnableGrpcAspNetCoreSupport = true;
+            // OpenTelemetry's Filter is inverted you return true to record and false to filter out
+            o.Filter = ctx =>
+            {
+                var path = ctx.Request.Path.ToUriComponent();
+                // Ignore telemetry for Blazor infrastructure items and static files
+                return !path.StartsWith("/_", StringComparison.OrdinalIgnoreCase) && !Path.HasExtension(path);
+            };
+        })
+        .AddConsoleExporter());
+// Configure Authentication
+_ = builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        // Beef up cookie security
+        // __Host prefix requires same site & secure
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#cookie_prefixes
+        o.Cookie.Name = "__Host-BlazorWasm";
+        o.Cookie.HttpOnly = true;
+        o.Cookie.IsEssential = true;
+        o.Cookie.SameSite = SameSiteMode.Strict;
+        o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        o.ExpireTimeSpan = TimeSpan.FromDays(1);
+        o.LoginPath = new PathString("/Account/Login");
+        o.AccessDeniedPath = new PathString("/Account/AccessDenied");
+        o.SlidingExpiration = true;
+    });
+
 _ = builder.Services
     .AddTransient<IWeatherForecastService, WeatherForecastService>() // gRPC services should be wired up as transient without the gRPC ceremony for pre-rendering
     .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
@@ -35,6 +80,8 @@ _ = builder.Services
     });
 _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
+
+
 // Only add GrpcReflection for non-production
 if (!isProduction)
 {
@@ -62,6 +109,9 @@ app
     .UseBlazorFrameworkFiles()
     .UseStaticFiles()
     .UseRouting()
+    .UseAuthentication()
+    .UseAuthorization()
+    .UseMiddleware<UserIdMiddleware>() // This will generate an anonymous cookie with a user id
     .UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
 // Only use GrpcReflection in non-production
 if (!isProduction)
@@ -71,7 +121,9 @@ if (!isProduction)
 }
 _ = app.MapRazorPages();
 //app.MapControllers();
+_ = app.MapGrpcService<AuthService>();
 _ = app.MapGrpcService<WeatherForecastService>();
-_ = app.MapFallbackToPage("/_Host");
+// The fallback path needs to exclude certain path prefixes so we respond correctly with a 404 rather than the UI
+_ = app.MapFallbackToPage("{*path:regex(^(?!" + string.Join('|', Extensions.Prefixes) + ").*$)}", "/_Host"); 
 
 await app.RunAsync();

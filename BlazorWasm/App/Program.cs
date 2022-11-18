@@ -1,4 +1,5 @@
 using BlazorWasm.App.Grpc;
+using BlazorWasm.Client.Services.Auth;
 using BlazorWasm.Client.Services.Weather;
 
 using FluentValidation;
@@ -20,6 +21,7 @@ _ = builder.Services
     .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
     .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddTransient<GrpcClientInterceptor>()
-    .AddGrpcClient<IWeatherForecastService>();
+    .AddGrpcClient<IWeatherForecastService>()
+    .AddGrpcClient<IAuthService>();
 
 await builder.Build().RunAsync();

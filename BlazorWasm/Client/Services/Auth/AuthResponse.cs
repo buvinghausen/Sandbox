@@ -3,8 +3,8 @@
 namespace BlazorWasm.Client.Services.Auth;
 
 [DataContract]
-public sealed record ValidateAuthenticationStateResponse
+public sealed record AuthResponse
 {
     [DataMember(Order = 1)]
-    public bool IsValid { get; init; }
+    public bool Success { get; init; }
 }
