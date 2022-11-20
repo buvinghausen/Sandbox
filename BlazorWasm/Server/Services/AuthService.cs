@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 
 using BlazorWasm.Client.Services.Auth;
+using BlazorWasm.Client.Shared;
 
 using FluentValidation;
 
@@ -20,11 +21,12 @@ namespace BlazorWasm.Server.Services;
 
 internal sealed class AuthService : IAuthService
 {
-    [Authorize]
+    [Authorize] // We only want the generic authorize attribute here because we need to get the claims for all user types
     public Task<ClaimsResponse> GetClaimsAsync(CallContext context = default) =>
         Task.FromResult(new ClaimsResponse(context.ServerCallContext!.GetHttpContext().User));
 
-    [Authorize(Roles = "Anonymous")]
+    // We only want to allow someone to invoke the login function if they have an anonymous cookie
+    [Authorize(Policy = Policies.Anonymous)]
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default)
     {
         // Check username & password
@@ -55,7 +57,8 @@ internal sealed class AuthService : IAuthService
         return response;
     }
 
-    // This will log the user out and restore their anonymous userid cookie
+    // We only want to allow someone to invoke the logout function if they have an authorized cookie
+    [Authorize(Policy = Policies.Authorized)]
     public Task<AuthResponse> LogoutAsync(CallContext context = default)
     {
         throw new NotImplementedException();
