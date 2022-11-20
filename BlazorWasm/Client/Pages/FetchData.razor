@@ -6,7 +6,7 @@
 @inject IWeatherForecastService Service
 @implements IDisposable
 
-@attribute [Authorize]
+@attribute [Authorize(Policy = Policies.Authorized)]
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -49,8 +49,8 @@ else
 
 @code {
     private PersistingComponentStateSubscription _subscription;
-    private WeatherForecastResponse[]? _forecasts;
-    private string? ExceptionInfo { get; set; }
+    private WeatherForecastResponse[] _forecasts;
+    private string ExceptionInfo { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

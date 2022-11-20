@@ -5,7 +5,7 @@ using BlazorWasm.Client.Services.Auth;
 
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace BlazorWasm.App;
+namespace BlazorWasm.App.Auth;
 
 internal sealed class ClientAuthenticationStateProvider : AuthenticationStateProviderBase
 {

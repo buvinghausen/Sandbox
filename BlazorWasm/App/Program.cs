@@ -1,4 +1,4 @@
-using BlazorWasm.App;
+using BlazorWasm.App.Auth;
 using BlazorWasm.App.Grpc;
 using BlazorWasm.Client.Services.Auth;
 using BlazorWasm.Client.Services.Weather;
@@ -26,8 +26,8 @@ _ = builder.Services
     .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddTransient<GrpcClientInterceptor>()
     .AddOptions()
-    .AddAuthorizationCore()
-    .AddSingleton<IAuthorizationPolicyProvider, DefaultAuthorizationPolicyProvider>()
+    .AddAuthorizationCore(o => o.AddAuthorizationPolicies()) // Note: policies must be available on both wasm & server
+    .AddSingleton<IAuthorizationPolicyProvider, DefaultAuthorizationPolicyProvider>() // We use the default providers but they must be explicitly added
     .AddSingleton<IAuthorizationService, DefaultAuthorizationService>()
     .AddGrpcClient<IWeatherForecastService>()
     .AddGrpcClient<IAuthService>();

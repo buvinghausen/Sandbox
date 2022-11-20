@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 
 using BlazorWasm.Client.Services.Weather;
+using BlazorWasm.Client.Shared;
 
 using Grpc.Core;
 
@@ -11,7 +12,8 @@ using ProtoBuf.Grpc;
 
 namespace BlazorWasm.Server.Services;
 
-[Authorize]
+// Only allow logged in users to invoke this service
+[Authorize(Policy = Policies.Authorized)]
 internal sealed class WeatherForecastService : IWeatherForecastService
 {
     private static readonly string[] Summaries =

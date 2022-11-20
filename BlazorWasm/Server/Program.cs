@@ -1,3 +1,4 @@
+using BlazorWasm.App.Auth;
 using BlazorWasm.Client.Services.Auth;
 using BlazorWasm.Client.Services.Weather;
 using BlazorWasm.Server;
@@ -50,8 +51,9 @@ _ = builder.Services
             };
         })
         .AddConsoleExporter());
-// Configure Authentication
+// Configure Authentication & Authorization
 _ = builder.Services
+    .AddAuthorization(o => o.AddAuthorizationPolicies()) // Note: policies must be available to both server & wasm
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(o =>
     {
