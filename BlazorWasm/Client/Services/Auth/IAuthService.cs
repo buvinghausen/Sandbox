@@ -8,7 +8,7 @@ namespace BlazorWasm.Client.Services.Auth;
 public interface IAuthService
 {
     [OperationContract]
-    Task<ClaimsResponse> GetClaimsAsync(CallContext context = default);
+    ValueTask<KeyValuePair<string, string>[]> GetClaimsAsync(CallContext context = default);
 
     [OperationContract]
     Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default);

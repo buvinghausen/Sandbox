@@ -16,12 +16,11 @@ internal sealed class ClientAuthenticationStateProvider : AuthenticationStatePro
         _authService = authService;
     }
 
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
-    {
-        // Get the claims array from the server via gRPC
-        var claims = await _authService.GetClaimsAsync();
-        // Now just return back the new authentication state
-        return new AuthenticationState(
-            new ClaimsPrincipal(new ClaimsIdentity(claims.Claims.Select(kvp => new Claim(kvp.Key, kvp.Value)), "Cookies", "name", "role")));
-    }
+    // Get the claims array from the server via gRPC and hand the browser the synthesized AuthenticationState
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync() =>
+        new(new ClaimsPrincipal(new ClaimsIdentity(
+            (await _authService.GetClaimsAsync()).Select(kvp => new Claim(kvp.Key, kvp.Value)),
+            "Cookies", // CookieAuthenticationDefaults.AuthenticationScheme
+            "name", // JwtClaimTypes.Name
+            "role"))); // JwtClaimTypes.Role
 }

@@ -32,7 +32,7 @@ internal sealed class UserIdMiddleware
                         new Claim(JwtClaimTypes.AuthenticationMethod, "anon"),
                         new Claim(JwtClaimTypes.Id, $"{SequentialGuidGenerator.Instance.NewGuid()}"),
                         new Claim(JwtClaimTypes.Role, "Anonymous")
-                    }, CookieAuthenticationDefaults.AuthenticationScheme)), // <- Claims identity class is a doofus you must pass the authentication scheme to it or else .NET acts like it's not authenticated
+                    }, CookieAuthenticationDefaults.AuthenticationScheme, JwtClaimTypes.Name, JwtClaimTypes.Role)), // <- Claims identity class is a doofus you must pass the authentication scheme to it or else .NET acts like it's not authenticated
                 new AuthenticationProperties
                 {
                     ExpiresUtc = DateTimeOffset.MaxValue,

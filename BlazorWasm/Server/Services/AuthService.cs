@@ -22,10 +22,11 @@ namespace BlazorWasm.Server.Services;
 internal sealed class AuthService : IAuthService
 {
     [Authorize] // We only want the generic authorize attribute here because we need to get the claims for all user types
-    public Task<ClaimsResponse> GetClaimsAsync(CallContext context = default) =>
-        Task.FromResult(new ClaimsResponse(context.ServerCallContext!.GetHttpContext().User));
+    public ValueTask<KeyValuePair<string, string>[]> GetClaimsAsync(CallContext context = default) =>
+        new(context.ServerCallContext!.GetHttpContext().User.Claims
+            .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToArray());
 
-    // We only want to allow someone to invoke the login function if they have an anonymous cookie
+    // We only want to allow someone to invoke the login function if they have an anonymous cookie so deny the request even if they are logged in
     [Authorize(Policy = Policies.Anonymous)]
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default)
     {
@@ -48,7 +49,7 @@ internal sealed class AuthService : IAuthService
                     new Claim(JwtClaimTypes.Name, request.Email!.Split('@')[0]),
                     new Claim(JwtClaimTypes.Id, id),
                     new Claim(JwtClaimTypes.Nonce, SequentialGuidGenerator.Instance.NewGuid().ToString())
-                }, CookieAuthenticationDefaults.AuthenticationScheme)), // <- Claims identity class is a doofus you must pass the authentication scheme to it or else .NET acts like it's not authenticated
+                }, CookieAuthenticationDefaults.AuthenticationScheme, JwtClaimTypes.Name, JwtClaimTypes.Role)), // <- Claims identity class is a doofus you must pass the authentication scheme to it or else .NET acts like it's not authenticated
             new AuthenticationProperties
             {
                 ExpiresUtc = request.RememberMe ? DateTimeOffset.MaxValue : DateTimeOffset.Now.AddDays(1), IsPersistent = request.RememberMe, IssuedUtc = DateTimeOffset.UtcNow
