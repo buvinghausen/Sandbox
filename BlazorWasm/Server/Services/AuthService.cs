@@ -27,7 +27,8 @@ internal sealed class AuthService : IAuthService
             .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToArray());
 
     // We only want to allow someone to invoke the login function if they have an anonymous cookie so deny the request even if they are logged in
-    [Authorize(Policy = Policies.Anonymous)]
+    //[Authorize(Policy = Policies.Anonymous)]
+    [Authorize]
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default)
     {
         // Check username & password
@@ -52,7 +53,9 @@ internal sealed class AuthService : IAuthService
                 }, CookieAuthenticationDefaults.AuthenticationScheme, JwtClaimTypes.Name, JwtClaimTypes.Role)), // <- Claims identity class is a doofus you must pass the authentication scheme to it or else .NET acts like it's not authenticated
             new AuthenticationProperties
             {
-                ExpiresUtc = request.RememberMe ? DateTimeOffset.MaxValue : DateTimeOffset.Now.AddDays(1), IsPersistent = request.RememberMe, IssuedUtc = DateTimeOffset.UtcNow
+                ExpiresUtc = request.RememberMe ? DateTimeOffset.MaxValue : DateTimeOffset.Now.AddDays(1),
+                IsPersistent = request.RememberMe,
+                IssuedUtc = DateTimeOffset.UtcNow
             }).ConfigureAwait(false);
         // Return the response
         return response;

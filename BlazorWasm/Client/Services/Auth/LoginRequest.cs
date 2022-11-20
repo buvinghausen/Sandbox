@@ -22,24 +22,24 @@ public sealed class LoginRequest
     /// <summary>
     /// Email address which is the user's username
     /// </summary>
-    [DataMember(Order = 1)]
     [Required]
     [EmailAddress]
+    [DataMember(Order = 1)]
     public string Email { get; set; }
 
     /// <summary>
     /// User's password
     /// </summary>
-    [DataMember(Order = 2)]
     [Required]
     [DataType(DataType.Password)]
+    [DataMember(Order = 2)]
     public string Password { get; set; }
 
     /// <summary>
     /// Set a persistent cookie that will last after the browser is closed
     /// </summary>
-    [DataMember(Order = 3)]
     [Display(Name = "Remember me?")]
+    [DataMember(Order = 3)]
     public bool RememberMe { get; set; }
 }
 
