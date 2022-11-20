@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Collections.Specialized;
+using System.Web;
 
 using Microsoft.AspNetCore.Components;
 
@@ -11,21 +12,14 @@ public abstract class QueryStringComponentBase : ComponentBase
 {
     [Inject] protected NavigationManager Navigation { get; set; }
 
-    private IReadOnlyDictionary<string, string> QueryString { get; set; }
+    private NameValueCollection QueryString { get; set; }
 
     // Use the more terse interface by wrapping the key indexer in a try get value
-    protected string this[string key]
-    {
-        get
-        {
-            QueryString.TryGetValue(key, out var value);
-            return value;
-        }
-    }
+    protected string this[string key] => QueryString[key];
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        QueryString = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query).ToDictionary();
+        QueryString = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query);
     }
 }
