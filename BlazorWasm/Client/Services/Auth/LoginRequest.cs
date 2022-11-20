@@ -54,6 +54,6 @@ internal sealed class LoginRequestValidator : AbstractValidator<LoginRequest>
         // TODO: Add complexity requirements
         RuleFor(l => l.Password)
             .NotEmpty()
-            .MinimumLength(8);
+            .MinimumLength(4);
     }
 }

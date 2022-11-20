@@ -6,7 +6,7 @@ using FluentValidation;
 namespace BlazorWasm.Client.Services.Auth;
 
 [DataContract]
-public sealed class RegisterRequest
+public class RegisterRequest
 {
     [EmailAddress]
     [Required]
@@ -62,7 +62,7 @@ internal sealed class RegisterRequestValidator : AbstractValidator<RegisterReque
         // TODO: Add complexity requirement match
         RuleFor(r => r.Password)
             .NotEmpty()
-            .MinimumLength(8);
+            .MinimumLength(4);
 
         RuleFor(r => r.ConfirmPassword)
             .NotEmpty()

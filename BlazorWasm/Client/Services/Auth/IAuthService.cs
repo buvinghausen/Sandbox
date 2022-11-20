@@ -17,5 +17,17 @@ public interface IAuthService
     Task<AuthResponse> LogoutAsync(CallContext context = default);
 
     [OperationContract]
+    Task<AuthResponse> ManageAsync(ManageRequest request, CallContext context = default);
+
+    [OperationContract]
+    Task<AuthResponse> RegisterAsync(RegisterRequest request, CallContext context = default);
+
+    [OperationContract]
+    Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request, CallContext context = default);
+
+    [OperationContract]
     Task<AuthResponse> ValidateAsync(CallContext context = default);
+
+    [OperationContract]
+    Task<AuthResponse> VerifyEmailAsync(VerifyEmailRequest request, CallContext context = default);
 }

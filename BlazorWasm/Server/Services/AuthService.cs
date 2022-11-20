@@ -65,8 +65,40 @@ internal sealed class AuthService : IAuthService
         throw new NotImplementedException();
     }
 
-    // This will verify the nonce claim is still valid (i.e. someone hasn't logged out on a different circuit/session)
+    [Authorize(Policy = Policies.Authorized)]
+    public Task<AuthResponse> ManageAsync(ManageRequest request, CallContext context = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    // We only want to allow someone to invoke the register function if they have an anonymous cookie so deny the request even if they are logged in
+    [Authorize(Policy = Policies.Anonymous)]
+    public Task<AuthResponse> RegisterAsync(RegisterRequest request, CallContext context = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    // We only want someone to be able to reset the password if they are not logged in
+    // If they are logged in they should just update their profile which skips the email verification process
+    [Authorize(Policy = Policies.Anonymous)]
+    public Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request, CallContext context = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    // This will verify the logged in user is still valid on the server
+    // It should be enabled for all authentication types but only perform
+    // the nonce claim => security stamp verification for authorized users
+    // Anonymous should always return true
+    [Authorize]
     public Task<AuthResponse> ValidateAsync(CallContext context = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    // We only want someone who has logged in to be able to verify their email
+    [Authorize(Policy = Policies.Authorized)]
+    public Task<AuthResponse> VerifyEmailAsync(VerifyEmailRequest request, CallContext context = default)
     {
         throw new NotImplementedException();
     }

@@ -1,20 +1,17 @@
 ﻿@page "/account/login"
+@inherits QueryStringComponentBase
 @using BlazorWasm.Client.Services.Auth
 @using Microsoft.AspNetCore.Components
 @using System.Linq.Expressions
-@using System.Web
 
 <PageTitle>Log in</PageTitle>
-
-<h1>Log in</h1>
-
 
 <div class="row">
     <div class="col-12 d-flex justify-content-center">
         <div class="card" style="width: 550px;">
             <div class="card-body">
                 <h1 class="mb-5 h2 font-weight-normal login-title text-center">
-                    Login
+                    Log in
                 </h1>
 
                 <EditForm Model="@LoginModel" OnValidSubmit="OnSubmit">
@@ -80,8 +77,6 @@
 </div>
 
 @code{
-    [Inject] NavigationManager NavigationManager { get; set; }
-
     [Inject]
     AuthenticationStateProvider AuthenticationStateProvider { get; set; }
 
@@ -93,7 +88,7 @@
 
     protected override void OnInitialized()
     {
-        LoginModel.Email = QueryString("login_hint");
+        LoginModel.Email = base["login_hint"];
     }
 
     private static bool IsInvalid(EditContext context, Expression<Func<object>> accessor) =>
@@ -101,9 +96,8 @@
 
     async Task OnSubmit()
     {
-
         Error = null;
-        var returnUrl = QueryString("returnUrl");
+        var returnUrl = base["returnUrl"];
         try
         {
             var result = await AuthService.LoginAsync(LoginModel);
@@ -115,7 +109,7 @@
                     // The authentication state has changed
                     provider.NotifyAuthenticationStateChanged();
                 }
-                NavigationManager.NavigateTo(returnUrl ?? string.Empty);
+                Navigation.NavigateTo(returnUrl ?? string.Empty);
             }
             //var loginData = await AuthStateProvider.Login(LoginModel, returnUrl);
             //if (!string.IsNullOrEmpty(loginData))
@@ -132,7 +126,4 @@
             Error = ex.Message;
         }
     }
-
-    private string QueryString(string key) =>
-        HttpUtility.ParseQueryString(new Uri(NavigationManager.Uri).Query)[key];
 }
