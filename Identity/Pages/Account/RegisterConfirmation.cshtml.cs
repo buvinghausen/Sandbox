@@ -70,7 +70,7 @@ public class RegisterConfirmationModel : PageModel
         EmailConfirmationUrl = Url.Page(
             "/Account/ConfirmEmail",
             pageHandler: null,
-            values: new { area = "Identity", userId, code, returnUrl },
+            values: new { userId, code, returnUrl },
             protocol: Request.Scheme);
 
         return Page();

@@ -1,11 +1,17 @@
-﻿using System.Security.Cryptography;
+﻿using System.Security.Claims;
+using System.Security.Cryptography;
 
 using BlazorWasm.Client.Services.Weather;
+
+using Grpc.Core;
+
+using Microsoft.AspNetCore.Authorization;
 
 using ProtoBuf.Grpc;
 
 namespace BlazorWasm.Server.Services;
 
+[Authorize]
 internal sealed class WeatherForecastService : IWeatherForecastService
 {
     private static readonly string[] Summaries =
@@ -24,6 +30,12 @@ internal sealed class WeatherForecastService : IWeatherForecastService
         CallContext context = default)
     {
         _logger.LogInformation("GetForecastAsync");
+        if (context.ServerCallContext != default)
+        {
+            var ctx = context.ServerCallContext.GetHttpContext();
+            var id = ctx.User.FindFirstValue("id");
+            _logger.LogInformation("Id: {Id}", id);
+        }
         return new(Enumerable.Range(0, 5).Select(index =>
                 new WeatherForecastResponse(request.Date.GetValueOrDefault().PlusDays(index),
                     RandomNumberGenerator.GetInt32(-20, 55),

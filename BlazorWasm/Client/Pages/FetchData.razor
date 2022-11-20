@@ -5,6 +5,9 @@
 @inject PersistentComponentState ApplicationState
 @inject IWeatherForecastService Service
 @implements IDisposable
+
+@attribute [Authorize]
+
 <PageTitle>Weather forecast</PageTitle>
 
 <h1>Weather forecast</h1>

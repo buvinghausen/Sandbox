@@ -1,0 +1,39 @@
+﻿@using BlazorWasm.Client.Services.Auth
+<EditForm Model="this" class="@(Small ? "form-inline" : "form-inline ml-auto")">
+
+    <AuthorizeView Context="_">
+        <NotAuthorized>
+            <NavLink class="btn btn-outline-success my-2 my-sm-0" href="/login">Login</NavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    <AuthorizeView Context="authCountext">
+        <Authorized>
+            <span class="navbar-text mr-2">
+                Logged in as: @authCountext.User.FindFirst("name")?.Value
+            </span>
+
+            <NavLink class="btn btn-outline-success my-2 my-sm-0" @onclick="BeginSignOut">Logout</NavLink>
+        </Authorized>
+    </AuthorizeView>
+
+</EditForm>
+
+@code{
+    [Inject] NavigationManager Navigation { get; set; }
+    [Inject] IAuthService AuthService { get; set; }
+    [Parameter] public bool Small { get; set; }
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        var result = await AuthService.LogoutAsync();
+        if (!result.Success)
+        {
+            Navigation.NavigateTo("/logout", forceLoad: true);
+        }
+        else
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+}

@@ -122,7 +122,7 @@ public class RegisterModel : PageModel
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
-                    values: new { area = "Identity", userId, code, returnUrl },
+                    values: new { userId, code, returnUrl },
                     protocol: Request.Scheme);
 
                 await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -156,7 +156,7 @@ public class RegisterModel : PageModel
         {
             throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
                                                 $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                                                "override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                                                "override the register page in /Pages/Account/Register.cshtml");
         }
     }
 

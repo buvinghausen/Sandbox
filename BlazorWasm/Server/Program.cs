@@ -1,4 +1,6 @@
+using BlazorWasm.Client.Services.Auth;
 using BlazorWasm.Client.Services.Weather;
+using BlazorWasm.Server;
 using BlazorWasm.Server.Extensions;
 using BlazorWasm.Server.Interceptors;
 using BlazorWasm.Server.Middleware;
@@ -7,6 +9,8 @@ using BlazorWasm.Server.Services;
 using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -60,13 +64,14 @@ _ = builder.Services
         o.Cookie.SameSite = SameSiteMode.Strict;
         o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         o.ExpireTimeSpan = TimeSpan.FromDays(1);
-        o.LoginPath = new PathString("/Account/Login");
-        o.AccessDeniedPath = new PathString("/Account/AccessDenied");
         o.SlidingExpiration = true;
     });
 
+// For server rendering or webassembly pre-rendering wire up the services directly on the server and skip the gRPC serialization and deserialization
 _ = builder.Services
-    .AddTransient<IWeatherForecastService, WeatherForecastService>() // gRPC services should be wired up as transient without the gRPC ceremony for pre-rendering
+    .AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>() // This is the revalidating state provider which will operate for the blazor server stuff
+    .AddScoped<IWeatherForecastService, WeatherForecastService>() 
+    .AddScoped<IAuthService, AuthService>()
     .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
     .AddGrpc(o =>
     {

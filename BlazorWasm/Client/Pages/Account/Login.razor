@@ -1,0 +1,139 @@
+﻿@page "/account/login"
+@using BlazorWasm.Client.Services.Auth
+@using Microsoft.AspNetCore.Components
+@using System.Linq.Expressions
+@using System.Web
+
+<PageTitle>Log in</PageTitle>
+
+<h1>Log in</h1>
+
+
+<div class="row">
+    <div class="col-12 d-flex justify-content-center">
+        <div class="card" style="width: 550px;">
+            <div class="card-body">
+                <h1 class="mb-5 h2 font-weight-normal login-title text-center">
+                    Login
+                </h1>
+
+                <EditForm Model="@LoginModel" OnValidSubmit="OnSubmit">
+
+                    <FluentValidator />
+
+                    @if (!string.IsNullOrEmpty(Error))
+                    {
+                        <div class="alert alert-danger">@Error</div>
+                    }
+
+                    @if (context.GetValidationMessages().Any())
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <ValidationSummary />
+                        </div>
+                    }
+
+                    <div class="form-group @(IsInvalid(context, () => LoginModel.Email) ? "is-invalid" : "")">
+                        <label>User name</label>
+                        <div class="input-group mb-2 @(IsInvalid(context, () => LoginModel.Email) ? "is-invalid" : "")">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">@@</div>
+                            </div>
+                            <InputText @bind-Value="LoginModel.Email"
+                                       class="@(IsInvalid(context, () => LoginModel.Email) ? "form-control is-invalid" : "form-control")"
+                                       placeholder="User name" type="text" />
+                        </div>
+                        @if (IsInvalid(context, () => LoginModel.Email))
+                        {
+                            <div class="invalid-feedback"><ValidationMessage For="() => LoginModel.Email" /></div>
+                        }
+                    </div>
+
+                    <div class="form-group @(IsInvalid(context, () => LoginModel.Password) ? "is-invalid" : "")">
+                        <label>Password</label>
+                        <InputText @bind-Value="LoginModel.Password"
+                                   class="@(IsInvalid(context, () => LoginModel.Password) ? "form-control is-invalid" : "form-control")"
+                                   placeholder="Password" type="password" />
+                        @if (IsInvalid(context, () => LoginModel.Password))
+                        {
+                            <div class="invalid-feedback"><ValidationMessage For="() => LoginModel.Password" /></div>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <InputCheckbox @bind-Value="LoginModel.RememberMe">Remember me</InputCheckbox>
+                            Remember me
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-primary btn-xs" type="submit">
+                            Sign in
+                        </button>
+                    </div>
+
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+
+    [Inject]
+    IAuthService AuthService { get; set; }
+
+    LoginRequest LoginModel { get; } = new();
+    string Error { get; set; }
+
+    protected override void OnInitialized()
+    {
+        LoginModel.Email = QueryString("login_hint");
+    }
+
+    private static bool IsInvalid(EditContext context, Expression<Func<object>> accessor) =>
+        context.GetValidationMessages(accessor).Any();
+
+    async Task OnSubmit()
+    {
+
+        Error = null;
+        var returnUrl = QueryString("returnUrl");
+        try
+        {
+            var result = await AuthService.LoginAsync(LoginModel);
+            if (result.Success)
+            {
+                if (AuthenticationStateProvider is AuthenticationStateProviderBase provider)
+                {
+                    // If we are in here then we are running in WASM mode and we need to let the cascading auth state provider know
+                    // The authentication state has changed
+                    provider.NotifyAuthenticationStateChanged();
+                }
+                NavigationManager.NavigateTo(returnUrl ?? string.Empty);
+            }
+            //var loginData = await AuthStateProvider.Login(LoginModel, returnUrl);
+            //if (!string.IsNullOrEmpty(loginData))
+            //{
+            //    NavigationManager.NavigateTo("/signInActual?t=" + Uri.EscapeDataString(loginData), forceLoad: true);
+            //}
+            //else
+            //{
+            //    NavigationManager.NavigateTo(returnUrl ?? string.Empty);
+            //}
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+    }
+
+    private string QueryString(string key) =>
+        HttpUtility.ParseQueryString(new Uri(NavigationManager.Uri).Query)[key];
+}
+}
