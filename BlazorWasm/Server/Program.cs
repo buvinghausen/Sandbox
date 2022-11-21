@@ -53,6 +53,7 @@ _ = builder.Services
         .AddConsoleExporter());
 // Configure Authentication & Authorization
 _ = builder.Services
+    .AddAuthorizationPolicyHandlers()
     .AddAuthorization(o => o.AddAuthorizationPolicies()) // Note: policies must be available to both server & wasm
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(o =>

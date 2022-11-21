@@ -8,6 +8,13 @@ namespace BlazorWasm.App.Auth;
 
 public static class PolicyExtensions
 {
+    public static IServiceCollection AddAuthorizationPolicyHandlers(this IServiceCollection services) => services
+        .AddSingleton<IAuthorizationHandler, AnonymousHandler>()
+        .AddSingleton<IAuthorizationHandler, AuthorizedHandler>()
+        .AddSingleton<IAuthorizationHandler, VerifiedHandler>()
+        .AddSingleton<IAuthorizationHandler, EmployeeHandler>()
+        .AddSingleton<IAuthorizationHandler, AdminHandler>();
+
     // Function to enable both WASM & server to have the exact same policies
     public static void AddAuthorizationPolicies(this AuthorizationOptions options)
     {

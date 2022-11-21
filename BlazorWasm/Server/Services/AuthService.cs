@@ -27,8 +27,7 @@ internal sealed class AuthService : IAuthService
             .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToArray());
 
     // We only want to allow someone to invoke the login function if they have an anonymous cookie so deny the request even if they are logged in
-    //[Authorize(Policy = Policies.Anonymous)]
-    [Authorize]
+    [Authorize(Policy = Policies.Anonymous)]
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default)
     {
         // Check username & password
