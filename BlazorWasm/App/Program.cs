@@ -1,6 +1,7 @@
 using BlazorWasm.App.Auth;
 using BlazorWasm.App.Grpc;
 using BlazorWasm.Client.Services.Auth;
+using BlazorWasm.Client.Services.Id;
 using BlazorWasm.Client.Services.Weather;
 
 using FluentValidation;
@@ -30,7 +31,8 @@ _ = builder.Services
     .AddAuthorizationCore(o => o.AddAuthorizationPolicies()) // Note: policies must be available on both wasm & server
     .AddSingleton<IAuthorizationPolicyProvider, DefaultAuthorizationPolicyProvider>() // We use the default providers but they must be explicitly added
     .AddSingleton<IAuthorizationService, DefaultAuthorizationService>()
-    .AddGrpcClient<IWeatherForecastService>()
-    .AddGrpcClient<IAuthService>();
+    .AddGrpcClient<IAuthService>()
+    .AddGrpcClient<IIdService>()
+    .AddGrpcClient<IWeatherForecastService>();
 
 await builder.Build().RunAsync();

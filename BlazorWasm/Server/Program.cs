@@ -1,5 +1,6 @@
 using BlazorWasm.App.Auth;
 using BlazorWasm.Client.Services.Auth;
+using BlazorWasm.Client.Services.Id;
 using BlazorWasm.Client.Services.Weather;
 using BlazorWasm.Server;
 using BlazorWasm.Server.Extensions;
@@ -11,7 +12,6 @@ using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -73,8 +73,9 @@ _ = builder.Services
 // For server rendering or webassembly pre-rendering wire up the services directly on the server and skip the gRPC serialization and deserialization
 _ = builder.Services
     .AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>() // This is the revalidating state provider which will operate for the blazor server stuff
-    .AddScoped<IWeatherForecastService, WeatherForecastService>() 
     .AddScoped<IAuthService, AuthService>()
+    .AddScoped<IIdService, IdService>()
+    .AddScoped<IWeatherForecastService, WeatherForecastService>()
     .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
     .AddGrpc(o =>
     {
@@ -130,6 +131,7 @@ if (!isProduction)
 _ = app.MapRazorPages();
 //app.MapControllers();
 _ = app.MapGrpcService<AuthService>();
+_ = app.MapGrpcService<IdService>();
 _ = app.MapGrpcService<WeatherForecastService>();
 // The fallback path needs to exclude certain path prefixes so we respond correctly with a 404 rather than the UI
 _ = app.MapFallbackToPage("{*path:regex(^(?!" + string.Join('|', Extensions.Prefixes) + ").*$)}", "/_Host"); 
