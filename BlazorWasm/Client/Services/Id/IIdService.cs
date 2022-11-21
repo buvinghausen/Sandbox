@@ -8,5 +8,8 @@ namespace BlazorWasm.Client.Services.Id;
 public interface IIdService
 {
     [OperationContract]
-    ValueTask<IdResponse> GetId(CallContext context = default);
+    ValueTask<IdResponse> GetIdAsync(CallContext context = default);
+
+    [OperationContract]
+    ValueTask<TimestampResponse> GetTimestampAsync(TimestampRequest request, CallContext context = default);
 }
