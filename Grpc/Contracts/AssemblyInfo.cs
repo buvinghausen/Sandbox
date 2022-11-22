@@ -1,3 +1,3 @@
 ﻿using ProtoBuf;
 
-[module: CompatibilityLevel(CompatibilityLevel.Level300)]
+[assembly: CompatibilityLevel(CompatibilityLevel.Level300)]
