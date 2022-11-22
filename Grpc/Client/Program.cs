@@ -17,15 +17,17 @@ using StatusCode = Grpc.Core.StatusCode;
 RuntimeTypeModel.Default.AddNodaTime();
 
 // Wireup OpenTelemetry
+/*
 using var tracerProvider = Sdk.CreateTracerProviderBuilder()
     .AddGrpcClientInstrumentation(
         opt => opt.SuppressDownstreamInstrumentation = true)
     .AddHttpClientInstrumentation()
     .AddConsoleExporter()
     .Build();
+*/
 
 Console.WriteLine("Press any key to start reading from the server");
-Console.Read();
+Console.ReadKey();
 
 using var channel = GrpcChannel.ForAddress("https://localhost:5001");
 // Health Checks
