@@ -5,8 +5,13 @@ using Grpc.Server.Services;
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
 using ProtoBuf.Grpc.Server;
 using ProtoBuf.Meta;
+
+using SequentialGuid;
 
 // Add NodaTime support to ProtoBuf
 RuntimeTypeModel.Default.AddNodaTime();
@@ -22,7 +27,15 @@ var isProduction = builder.Environment.IsProduction();
 //    listenOptions.Use(next => new ClearTextHttpMultiplexingMiddleware(next).OnConnectAsync)));
 
 // Add services to the container.
-_ = builder.Services
+builder.Services.AddOpenTelemetryTracing(trace => trace
+    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+        .AddService(builder.Environment.ApplicationName, serviceInstanceId: SequentialGuidGenerator.Instance.NewGuid().ToString()))
+    .AddAspNetCoreInstrumentation(o =>
+    {
+        o.RecordException = true;
+        o.EnableGrpcAspNetCoreSupport = true;
+    })
+    .AddConsoleExporter())
     .AddValidatorsFromAssemblyContaining<GreeterValidator>(includeInternalTypes: true)
     .AddGrpc(o =>
     {
@@ -50,6 +63,7 @@ _ = app.UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
 if (!isProduction) _ = app.MapCodeFirstGrpcReflectionService();
 _ = app.MapGrpcHealthChecksService();
 _ = app.MapGrpcService<GreeterService>();
+_ = app.MapGrpcService<IdService>();
 _ = app.MapGrpcService<WeatherForecastService>();
 _ = app.MapGet("/",
     () =>
