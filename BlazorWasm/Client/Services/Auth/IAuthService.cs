@@ -11,23 +11,23 @@ public interface IAuthService
     ValueTask<KeyValuePair<string, string>[]> GetClaimsAsync(CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default);
+    Task<BoolResponse> LoginAsync(LoginRequest request, CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> LogoutAsync(CallContext context = default);
+    Task<BoolResponse> LogoutAsync(CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> ManageAsync(ManageRequest request, CallContext context = default);
+    Task<BoolResponse> ManageAsync(ManageRequest request, CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> RegisterAsync(RegisterRequest request, CallContext context = default);
+    Task<BoolResponse> RegisterAsync(RegisterRequest request, CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request, CallContext context = default);
+    Task<BoolResponse> ResetPasswordAsync(ResetPasswordRequest request, CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> ValidateAsync(CallContext context = default);
+    Task<BoolResponse> ValidateAsync(CallContext context = default);
 
     [OperationContract]
-    Task<AuthResponse> VerifyEmailAsync(VerifyEmailRequest request, CallContext context = default);
+    Task<BoolResponse> VerifyEmailAsync(VerifyEmailRequest request, CallContext context = default);
 }

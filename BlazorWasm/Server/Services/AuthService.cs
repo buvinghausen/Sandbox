@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 
+using BlazorWasm.Client.Services;
 using BlazorWasm.Client.Services.Auth;
 using BlazorWasm.Client.Shared;
 
@@ -28,10 +29,10 @@ internal sealed class AuthService : IAuthService
 
     // We only want to allow someone to invoke the login function if they have an anonymous cookie so deny the request even if they are logged in
     [Authorize(Policy = Policies.Anonymous)]
-    public async Task<AuthResponse> LoginAsync(LoginRequest request, CallContext context = default)
+    public async Task<BoolResponse> LoginAsync(LoginRequest request, CallContext context = default)
     {
         // Check username & password
-        var response = new AuthResponse { Success = request.Email == "demo@demo.com" && request.Password == "demo" };
+        var response = new BoolResponse { Success = request.Email == "demo@demo.com" && request.Password == "demo" };
         // If invalid throw ValidationException
         if (!response.Success)
             throw new ValidationException("Invalid email or password");
@@ -39,7 +40,7 @@ internal sealed class AuthService : IAuthService
         var httpCtx = context.ServerCallContext!.GetHttpContext();
         var id = httpCtx.User.FindFirstValue(JwtClaimTypes.Id)!;
         // Now SignOut anonymous cookie
-        await httpCtx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await httpCtx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
         // Now SignIn with user based cookie
         await httpCtx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(new ClaimsIdentity(
@@ -62,20 +63,40 @@ internal sealed class AuthService : IAuthService
 
     // We only want to allow someone to invoke the logout function if they have an authorized cookie
     [Authorize(Policy = Policies.Authorized)]
-    public Task<AuthResponse> LogoutAsync(CallContext context = default)
+    public async Task<BoolResponse> LogoutAsync(CallContext context = default)
     {
-        throw new NotImplementedException();
+        // If valid get UserId from anonymous cookie
+        var httpCtx = context.ServerCallContext!.GetHttpContext();
+        var id = httpCtx.User.FindFirstValue(JwtClaimTypes.Id)!;
+        // Now SignOut authenticated cookie
+        await httpCtx.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
+        // 
+        await httpCtx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(new ClaimsIdentity(
+                new[]
+                {
+                    new Claim(JwtClaimTypes.AuthenticationMethod, "anon"),
+                    new Claim(JwtClaimTypes.Id, id),
+                    new Claim(JwtClaimTypes.Role, "Anonymous")
+                }, CookieAuthenticationDefaults.AuthenticationScheme, JwtClaimTypes.Name, JwtClaimTypes.Role)), // <- Claims identity class is a doofus you must pass the authentication scheme to it or else .NET acts like it's not authenticated
+            new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.MaxValue,
+                IsPersistent = true,
+                IssuedUtc = DateTimeOffset.UtcNow
+            }).ConfigureAwait(false);
+        return new(true);
     }
 
     [Authorize(Policy = Policies.Authorized)]
-    public Task<AuthResponse> ManageAsync(ManageRequest request, CallContext context = default)
+    public Task<BoolResponse> ManageAsync(ManageRequest request, CallContext context = default)
     {
         throw new NotImplementedException();
     }
 
     // We only want to allow someone to invoke the register function if they have an anonymous cookie so deny the request even if they are logged in
     [Authorize(Policy = Policies.Anonymous)]
-    public Task<AuthResponse> RegisterAsync(RegisterRequest request, CallContext context = default)
+    public Task<BoolResponse> RegisterAsync(RegisterRequest request, CallContext context = default)
     {
         throw new NotImplementedException();
     }
@@ -83,7 +104,7 @@ internal sealed class AuthService : IAuthService
     // We only want someone to be able to reset the password if they are not logged in
     // If they are logged in they should just update their profile which skips the email verification process
     [Authorize(Policy = Policies.Anonymous)]
-    public Task<AuthResponse> ResetPasswordAsync(ResetPasswordRequest request, CallContext context = default)
+    public Task<BoolResponse> ResetPasswordAsync(ResetPasswordRequest request, CallContext context = default)
     {
         throw new NotImplementedException();
     }
@@ -93,14 +114,14 @@ internal sealed class AuthService : IAuthService
     // the nonce claim => security stamp verification for authorized users
     // Anonymous should always return true
     [Authorize]
-    public Task<AuthResponse> ValidateAsync(CallContext context = default)
+    public Task<BoolResponse> ValidateAsync(CallContext context = default)
     {
         throw new NotImplementedException();
     }
 
     // We only want someone who has logged in to be able to verify their email
     [Authorize(Policy = Policies.Authorized)]
-    public Task<AuthResponse> VerifyEmailAsync(VerifyEmailRequest request, CallContext context = default)
+    public Task<BoolResponse> VerifyEmailAsync(VerifyEmailRequest request, CallContext context = default)
     {
         throw new NotImplementedException();
     }
