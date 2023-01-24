@@ -1,19 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿namespace Grpc.Contracts.Id;
 
-namespace Grpc.Contracts.Id;
-
-[DataContract]
-public sealed record IdResponse
-{
-    public IdResponse()
-    {
-    }
-
-    public IdResponse(Guid id)
-    {
-        Id = id;
-    }
-
-    [DataMember(Order = 1)]
-    public Guid Id { get; init; }
-}
+/*
+ * Record Structs & Readonly Record Structs
+ *
+ * These types would be nice to support 
+ */
+public readonly record struct IdResponse(Guid Id);

@@ -17,7 +17,7 @@ internal sealed class GrpcExceptionInterceptor : Interceptor
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(TRequest request,
         ServerCallContext context, UnaryServerMethod<TRequest, TResponse> continuation)
     {
-        _logger.LogDebug("Starting call. Request: {Path}", context.GetHttpContext().Request.Path);
+        _logger.StartGrpcCall(context.GetHttpContext().Request.Path);
         try
         {
             return await continuation(request, context).ConfigureAwait(false);
@@ -29,7 +29,7 @@ internal sealed class GrpcExceptionInterceptor : Interceptor
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "An error occurred when calling {Method}", context.Method);
+            _logger.GrpcError(context.Method, e);
             throw new RpcException(new Status(StatusCode.Internal, e.Message, e));
         }
     }
@@ -38,6 +38,7 @@ internal sealed class GrpcExceptionInterceptor : Interceptor
         IServerStreamWriter<TResponse> responseStream, ServerCallContext context,
         ServerStreamingServerMethod<TRequest, TResponse> continuation)
     {
+        _logger.StartGrpcCall(context.GetHttpContext().Request.Path);
         try
         {
             await continuation(request, responseStream, context).ConfigureAwait(false);
@@ -50,6 +51,10 @@ internal sealed class GrpcExceptionInterceptor : Interceptor
         catch (TaskCanceledException)
         {
             // Ignore this exception
+        }
+        catch (Exception e)
+        {
+            _logger.GrpcError(context.Method, e);
         }
     }
 

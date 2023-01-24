@@ -3,8 +3,10 @@ using FluentValidation;
 using Grpc.Server.Interceptors;
 using Grpc.Server.Services;
 
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
+using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -20,6 +22,13 @@ ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 
 var builder = WebApplication.CreateBuilder(args);
 var isProduction = builder.Environment.IsProduction();
+builder.WebHost
+    .UseKestrel(kso => kso.ListenAnyIP(5001, lo =>
+    {
+        lo.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+        lo.UseHttps();
+    }));
+
 // Additional configuration is required to successfully run gRPC on macOS.
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 // 9ntonio uncomment the following 2 lines and try again
@@ -27,17 +36,22 @@ var isProduction = builder.Environment.IsProduction();
 //    listenOptions.Use(next => new ClearTextHttpMultiplexingMiddleware(next).OnConnectAsync)));
 
 // Add services to the container.
-builder.Services.AddOpenTelemetryTracing(trace => trace
-    .SetResourceBuilder(ResourceBuilder.CreateDefault()
-        .AddService(builder.Environment.ApplicationName, serviceInstanceId: SequentialGuidGenerator.Instance.NewGuid().ToString()))
-    .AddAspNetCoreInstrumentation(o =>
-    {
-        o.RecordException = true;
-        o.EnableGrpcAspNetCoreSupport = true;
-    })
-    .AddConsoleExporter())
+_ = builder.Services
+    .AddHttpContextAccessor()
     .AddValidatorsFromAssemblyContaining<GreeterValidator>(includeInternalTypes: true)
-    .AddGrpc(o =>
+    .AddOpenTelemetry()
+    .WithTracing(trace => trace
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(builder.Environment.ApplicationName, serviceInstanceId: SequentialGuidGenerator.Instance.NewGuid().ToString()))
+        .AddAspNetCoreInstrumentation(o =>
+        {
+            o.RecordException = true;
+            o.EnableGrpcAspNetCoreSupport = true;
+        })
+        .AddConsoleExporter())
+    .StartWithHost();
+_ = builder.Services
+    .AddCodeFirstGrpc(o =>
     {
         o.EnableDetailedErrors = !isProduction;
         // Wire up validation and exception handlers (note the sequence here is imperative)
@@ -51,8 +65,7 @@ builder.Services.AddOpenTelemetryTracing(trace => trace
 _ = builder.Services
     .AddGrpcHealthChecks()
     .AddCheck("Demo", () => HealthCheckResult.Healthy());
-_ = builder.Services
-    .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
+
 if (!isProduction)
     _ = builder.Services.AddCodeFirstGrpcReflection();
 var app = builder.Build();

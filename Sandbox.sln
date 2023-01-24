@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMaui", "BlazorMaui\Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Identity\Identity.csproj", "{D4DD5B30-681C-488A-8958-E6BCC0588900}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Android", "Android\Android.csproj", "{211CC656-7918-42F6-BAA3-B584309418EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,12 @@ Global
 		{D4DD5B30-681C-488A-8958-E6BCC0588900}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4DD5B30-681C-488A-8958-E6BCC0588900}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4DD5B30-681C-488A-8958-E6BCC0588900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{211CC656-7918-42F6-BAA3-B584309418EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{211CC656-7918-42F6-BAA3-B584309418EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{211CC656-7918-42F6-BAA3-B584309418EC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{211CC656-7918-42F6-BAA3-B584309418EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{211CC656-7918-42F6-BAA3-B584309418EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{211CC656-7918-42F6-BAA3-B584309418EC}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

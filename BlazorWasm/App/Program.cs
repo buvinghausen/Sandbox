@@ -24,7 +24,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 _ = builder.Services
     .AddAuthorizationPolicyHandlers()
     .AddScoped<AuthenticationStateProvider, ClientAuthenticationStateProvider>() // This is the WASM authentication state provider which talks via gRPC
-    .AddValidatorsFromAssemblyContaining<IWeatherForecastService>(includeInternalTypes: true)
+    .AddValidatorsFromAssemblyContaining<IAuthService>(includeInternalTypes: true)
     .AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddTransient<GrpcClientInterceptor>()
     .AddOptions()

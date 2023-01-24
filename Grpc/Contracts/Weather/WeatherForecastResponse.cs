@@ -1,32 +1,17 @@
-﻿using System.Runtime.Serialization;
-
-using NodaTime;
+﻿using NodaTime;
 
 namespace Grpc.Contracts.Weather;
 
-[DataContract]
-public sealed record WeatherForecastResponse
+public sealed record WeatherForecastResponse(LocalDate Date, int TemperatureC, string Summary)
 {
-    // All gRPC classes must have a paramterless constructor
-    public WeatherForecastResponse()
-    {
-    }
-
-    public WeatherForecastResponse(LocalDate date, int temperatureC, string summary)
-    {
-        Date = date;
-        TemperatureC = temperatureC;
-        Summary = summary;
-    }
-
-    [DataMember(Order = 1)]
-    public LocalDate Date { get; init; }
-
-    [DataMember(Order = 2)]
-    public int TemperatureC { get; init; }
-
-    [DataMember(Order = 3)]
-    public string Summary { get; init; } = string.Empty;
-
+    /*
+     * Thoughts: Read only properties should probably be omitted by default when using constructor initialization?
+     * Rationale: The class has everything it needs and both parties client & server can fulfill the contract
+     * Client Notes:
+     *  This property triggers an InvalidOperationException: No marshaller available for Grpc.Contracts.Weather.WeatherForecastResponse[]
+     *  On DefaultClientFactory.CreateClient<TService>(CallInvoker channel)
+     * Server Notes:
+     *  CodeFirstServiceMethodProvider just ignores the IWeatherForecastService entirely since it only has one method
+     */
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

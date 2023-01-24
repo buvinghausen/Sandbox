@@ -5,8 +5,8 @@ using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 
-using OpenTelemetry;
-using OpenTelemetry.Trace;
+//using OpenTelemetry;
+//using OpenTelemetry.Trace;
 
 using ProtoBuf.Grpc.Client;
 using ProtoBuf.Meta;
@@ -25,7 +25,8 @@ using var tracerProvider = Sdk.CreateTracerProviderBuilder()
     .AddConsoleExporter()
     .Build();
 */
-
+Console.WriteLine("Client starting.....");
+await Task.Delay(5000); // Wait for 5 seconds to give the server a chance to boot
 Console.WriteLine("Press any key to start reading from the server");
 Console.ReadKey();
 
@@ -65,7 +66,7 @@ try
     Console.WriteLine("Getting weather forecast");
     var service = channel.CreateGrpcService<IWeatherForecastService>();
     var response = await service.GetForecastsAsync(new WeatherForecastRequest(DateTime.Now));
-    response.ToList().ForEach(f => Console.WriteLine($"Date: {f.Date}\tTemperature (F): {f.TemperatureF}\tSummary: {f.Summary}"));
+    response.ToList().ForEach(f => Console.WriteLine($"Date: {f.Date}"));//\tTemperature (F): {f.TemperatureF}\tSummary: {f.Summary}"));
 }
 catch (RpcException e) when (e.StatusCode == StatusCode.InvalidArgument)
 {

@@ -1,21 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <NoWarn>CA1852</NoWarn>
+        <UserSecretsId>dotnet-Worker-a699e18c-e371-48a7-afc4-dedf1fae56cb</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.HealthCheck" Version="2.*" />
-        <PackageReference Include="Grpc.Net.Client" Version="2.*" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.*" />
         <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.*" />
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-*" />
         <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.0.0-*" />
         <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-*" />
+        <PackageReference Include="protobuf-net.Grpc.ClientFactory" Version="1.*" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Contracts\Grpc.Contracts.csproj" />
     </ItemGroup>
-
 </Project>

@@ -17,7 +17,7 @@ internal sealed class GreeterService : IGreeterService
 
     public Task<GreeterResponse> GetGreetingAsync(GreeterRequest request, CallContext context = default)
     {
-        _logger.LogInformation("Sending greeting to {Name}", request.Name);
+        _logger.SendGreeting(request.Name!);
         return Task.FromResult(new GreeterResponse(request));
     }
 }

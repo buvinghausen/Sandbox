@@ -24,6 +24,7 @@ internal sealed class AuthService : IAuthService
 {
     [Authorize] // We only want the generic authorize attribute here because we need to get the claims for all user types
     public ValueTask<KeyValuePair<string, string>[]> GetClaimsAsync(CallContext context = default) =>
+        
         new(context.ServerCallContext!.GetHttpContext().User.Claims
             .Select(c => new KeyValuePair<string, string>(c.Type, c.Value)).ToArray());
 

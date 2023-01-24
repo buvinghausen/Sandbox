@@ -16,7 +16,7 @@ public abstract class QueryStringComponentBase : ComponentBase
 
     // Lock the horrors of NameValueCollection away by wrapping the property in a simple indexer get
     protected string this[string key] => QueryString == null
-        ? throw new NullReferenceException("Have you forgotten to call base.OnInitialized() in your component?")
+        ? throw new InvalidOperationException("Have you forgotten to call base.OnInitialized() in your component?")
         : QueryString[key];
 
     protected override void OnInitialized()

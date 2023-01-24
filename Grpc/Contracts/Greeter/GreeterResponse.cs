@@ -1,20 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿namespace Grpc.Contracts.Greeter;
 
-namespace Grpc.Contracts.Greeter;
-
-[DataContract]
-public sealed record GreeterResponse
+public sealed record GreeterResponse(string Message)
 {
-    // All gRPC classes must have a paramterless constructor
-    public GreeterResponse()
+    public GreeterResponse(GreeterRequest request) : this($"Hello {request.Name}!")
     {
     }
-
-    public GreeterResponse(GreeterRequest request)
-    {
-        Message = $"Hello {request.Name}!";
-    }
-
-    [DataMember(Order = 1)]
-    public string Message { get; init; } = string.Empty;
 }

@@ -1,26 +1,11 @@
-﻿using System.Runtime.Serialization;
-
-using NodaTime;
+﻿using NodaTime;
 
 namespace Grpc.Contracts.Weather;
 
-[DataContract]
-public sealed record WeatherForecastRequest
+public sealed record WeatherForecastRequest(LocalDate Date)
 {
-    // All gRPC classes must have a paramterless constructor
-    public WeatherForecastRequest()
-    {
-    }
-
+    // Helper method to convert from System.DateTime
     public WeatherForecastRequest(DateTime date) : this(LocalDate.FromDateTime(date))
     {
     }
-
-    public WeatherForecastRequest(LocalDate date)
-    {
-        Date = date;
-    }
-
-    [DataMember(Order = 1)]
-    public LocalDate? Date { get; init; }
 }

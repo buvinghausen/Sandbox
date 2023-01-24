@@ -13,6 +13,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 
+using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -34,7 +35,8 @@ var isProduction = builder.Environment.IsProduction();
 // Add services to the container.
 // Enable OpenTelemetry
 _ = builder.Services
-    .AddOpenTelemetryTracing(trace => trace
+    .AddOpenTelemetry()
+    .WithTracing(trace => trace
         .SetResourceBuilder(ResourceBuilder.CreateDefault()
             .AddService("BlazorWasm",
                 serviceInstanceId: SequentialGuidGenerator.Instance.NewGuid().ToString()))
@@ -50,7 +52,8 @@ _ = builder.Services
                 return !path.StartsWith("/_", StringComparison.OrdinalIgnoreCase) && !Path.HasExtension(path);
             };
         })
-        .AddConsoleExporter());
+        .AddConsoleExporter())
+    .StartWithHost();
 // Configure Authentication & Authorization
 _ = builder.Services
     .AddAuthorizationPolicyHandlers()
@@ -70,7 +73,7 @@ _ = builder.Services
         o.SlidingExpiration = true;
     });
 
-// For server rendering or webassembly pre-rendering wire up the services directly on the server and skip the gRPC serialization and deserialization
+// For server rendering or WebAssembly pre-rendering wire up the services directly on the server and skip the gRPC serialization and deserialization
 _ = builder.Services
     .AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>() // This is the revalidating state provider which will operate for the blazor server stuff
     .AddScoped<IAuthService, AuthService>()
@@ -89,7 +92,6 @@ _ = builder.Services
     });
 _ = builder.Services
     .AddCodeFirstGrpc(o => o.EnableDetailedErrors = !isProduction);
-
 
 // Only add GrpcReflection for non-production
 if (!isProduction)
@@ -115,12 +117,12 @@ else
 
 app
     .UseHttpsRedirection()
+    .UseAuthentication()
+    .UseMiddleware<UserIdMiddleware>() // This will generate an anonymous cookie with a user id
     .UseBlazorFrameworkFiles()
     .UseStaticFiles()
     .UseRouting()
-    .UseAuthentication()
     .UseAuthorization()
-    .UseMiddleware<UserIdMiddleware>() // This will generate an anonymous cookie with a user id
     .UseGrpcWeb(new GrpcWebOptions { DefaultEnabled = true });
 // Only use GrpcReflection in non-production
 if (!isProduction)
@@ -136,4 +138,4 @@ _ = app.MapGrpcService<WeatherForecastService>();
 // The fallback path needs to exclude certain path prefixes so we respond correctly with a 404 rather than the UI
 _ = app.MapFallbackToPage("{*path:regex(^(?!" + string.Join('|', Extensions.Prefixes) + ").*$)}", "/_Host"); 
 
-await app.RunAsync();
+await app.RunAsync().ConfigureAwait(false);

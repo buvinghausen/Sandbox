@@ -28,9 +28,9 @@ internal sealed class WeatherForecastService : IWeatherForecastService
     public Task<WeatherForecastResponse[]> GetForecastsAsync(WeatherForecastRequest request,
         CallContext context = default)
     {
-        _logger.LogInformation("GetForecastAsync");
+        _logger.LoadForecast(request.Date);
         return Task.FromResult(Enumerable.Range(0, 5).Select(index =>
-                new WeatherForecastResponse(request.Date.GetValueOrDefault().PlusDays(index),
+                new WeatherForecastResponse(request.Date.PlusDays(index),
                     RandomNumberGenerator.GetInt32(-20, 55),
                     Summaries[RandomNumberGenerator.GetInt32(Summaries.Length)]))
             .ToArray());
