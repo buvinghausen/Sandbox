@@ -52,8 +52,7 @@ _ = builder.Services
                 return !path.StartsWith("/_", StringComparison.OrdinalIgnoreCase) && !Path.HasExtension(path);
             };
         })
-        .AddConsoleExporter())
-    .StartWithHost();
+        .AddConsoleExporter());
 // Configure Authentication & Authorization
 _ = builder.Services
     .AddAuthorizationPolicyHandlers()

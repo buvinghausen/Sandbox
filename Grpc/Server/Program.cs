@@ -6,7 +6,6 @@ using Grpc.Server.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -48,8 +47,7 @@ _ = builder.Services
             o.RecordException = true;
             o.EnableGrpcAspNetCoreSupport = true;
         })
-        .AddConsoleExporter())
-    .StartWithHost();
+        .AddConsoleExporter());
 _ = builder.Services
     .AddCodeFirstGrpc(o =>
     {
